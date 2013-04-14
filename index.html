@@ -99,7 +99,7 @@
 	
 	socket.on('markup', function(markup){
 		console.log('Markup returned = ' + markup);
-		document.getElementById(divIds.markContainer).value = markup;
+		document.getElementById(divIds.markContainer).innerHTML = markup;
 	});
 
   	
