@@ -80,9 +80,8 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-  //When user reaches page, prompt for name.
-	window.onLoad = addUser();
-	
+  
+		
 	var divIds = {
 		userNames : "userNames",
 		markContainer : "markContainer",
@@ -94,14 +93,13 @@
 	var socket = io.connect('http://localhost');
 	
 	socket.on('message', function (data) {
-	  console.log('Returned data = ' + data);
-	  document.getElementById('txt').value = data;
-	      //document.getElementById('container').innerHTML = 	data;
+		console.log('Returned data = ' + data);
+		document.getElementById('txt').value = data;
 	});
 	
 	socket.on('markup', function(markup){
-	      console.log('Markup returned = ' + markup);
-	  document.getElementById('markup').value = markup;
+		console.log('Markup returned = ' + markup);
+		document.getElementById('markup').value = markup;
 	});
 
   	
@@ -129,7 +127,7 @@
 		console.log(k.value);
 
 		//Send the entry
-		socket.send(k.value);
+		socket.emit('message', k.value);
 	}
 
 	function sendMarkup(m){
@@ -150,4 +148,7 @@
 		//Send the entry
 		socket.send(m.value);
 	}
+	
+	//When user reaches page, prompt for name.
+	window.onLoad = addUser();
 </script>
