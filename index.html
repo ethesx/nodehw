@@ -99,7 +99,7 @@
 	
 	socket.on('markup', function(markup){
 		console.log('Markup returned = ' + markup);
-		document.getElementById('markup').value = markup;
+		document.getElementById(divIds.markContainer).value = markup;
 	});
 
   	
@@ -120,33 +120,34 @@
 
 	function sendMessage(k){
 
+		var value = k.value;
 		//Update the message area with typed text
-		document.getElementById(divIds.textarea).value = k.value;
+		document.getElementById(divIds.textarea).value = value;
 
 		//Log the entry
-		console.log(k.value);
+		console.log(value);
 
 		//Send the entry
-		socket.emit('message', k.value);
+		socket.emit('message', value);
 	}
 
 	function sendMarkup(m){
 		//Update the message area with typed text
-		//document.getElementById('txt').value = 	m.value;
+
 		var addDiv = document.createElement('div');
-		//document.getElementById('container').innerHTML = 	m.value;
 		addDiv.id = divIds.addDiv;
-		addDiv.innerHTML = 	m.value;
+		addDiv.innerHTML = m.value;
 		if(document.getElementById(divIds.addDiv))
 			document.getElementById(divIds.markContainer).replaceChild(addDiv, document.getElementById(divIds.addDiv));
 		else
 			document.getElementById(divIds.markContainer).appendChild(addDiv);
 
+		var output = document.getElementById(divIds.markContainer).innerHTML;
 		//Log the entry
-		console.log(m.value);
+		console.log(output);
 
 		//Send the entry
-		socket.send(m.value);
+		socket.emit('markup', output);
 	}
 	
 	//When user reaches page, prompt for name.
