@@ -18,8 +18,13 @@ function handler (req, res) {
 }
 
 io.sockets.on('connection', function (socket) {
-  socket.on('message', function (data) {
-    console.log("I Received= " + data);
-    socket.broadcast.send(data);
+  socket.on('message', function (msg) {
+    console.log("I Received= " + msg);
+    socket.broadcast.send(msg);
   });
+
+  socket.on('markup', function(markup){
+	console.log("Markup Received= " + markup);
+	socket.broadcast.emit('markup', markup);
+	  });
 });

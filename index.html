@@ -1,6 +1,77 @@
+<html>
+<head>
+	<style>
+		html, body{
+		    height:100%;
+		}
+
+		body{
+
+		    overflow-y: scroll;
+		    overflow: -moz-scrollbars-vertical;
+		    background: none repeat scroll 0% 0% rgb(239, 236, 230);
+
+		    }
+		#inputDiv{font:21px/31px "Georgia";}
+
+		#inputDiv h1,#inputDiv h2,#inputDiv h3,#inputDiv h4,#inputDiv h5,#inputDiv h6{
+		    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+		    font-weight: lighter;
+		    margin:0;
+		}
+
+		/*Standard sizes*/
+		#inputDiv h1{font-size:220%;}
+		#inputDiv h2{font-size:200%;}
+		#inputDiv h3{font-size:180%;}
+		#inputDiv h4{font-size:160%;}
+		#inputDiv h5{font-size:140%;}
+		#inputDiv h6{font-size:120%;}
+
+		#divMain {
+		    position:relative;
+		    width:930px;
+		    min-height:593px;
+		    margin:0 auto;
+		    background: none repeat scroll 0% 0% rgb(255, 255, 255);
+		    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.23);
+		    padding:31px;
+ 		}
+
+	</style>
+</head>
 <body>
-<textarea id="txt"  rows="100" cols="100" onKeyUp="sendMe(this)" ></textarea>
-<!-- <button onclick="socket.emit('event', document.getElementById('txt').value)"  >Send</button> -->
+<div id="divMain" >
+
+	<div id="inputDiv">
+
+		<h6>Communal text area</h6>
+		<textarea id="txt"  rows="10" cols="100" onKeyUp="sendMessage(this)" ></textarea>
+
+		<h6 style="display:block;">Enter code here</h6>
+		<textarea id="markup"  rows="10" cols="100" onKeyUp="sendMarkup(this)" ></textarea>
+		<h6></h6>
+
+		<div  style="position:absolute;top:31px;right:31px;width:70px;/*border:1px solid black;*/" >
+			<h6>Users:</h6>
+			<div id="users" style="font-size:50%;word-wrap: break-word;word-break: break-all;">
+				User1
+				User2 User3 asdf asdf
+				asd
+				adf
+				adf
+				asdfasdfasdfasdf
+			</div>
+		</div>
+
+		<span style="display:block;">Markup results:</span>
+	</div>
+
+
+	<div id="container" style="position:relative;/*border:1px solid red;*/margin-top:30px;" ></div>
+</div>
+
+
 
 </body>
 
@@ -8,18 +79,64 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-  var socket = io.connect('http://invengion.org');
+  var socket = io.connect('http://localhost');
   socket.on('message', function (data) {
-    console.log(data);
+    console.log('Returned data = ' + data);
     document.getElementById('txt').value = data;
-
+	//document.getElementById('container').innerHTML = 	data;
   });
 
-  function sendMe(k){
+  socket.on('markup', function(markup){
+  	console.log('Markup returned = ' + markup);
+    document.getElementById('markup').value = markup;
+  });
 
-  	document.getElementById('txt').value = 	k.value;
-  	console.log(k.value);
-    socket.send(k.value);
+  	//When user reaches page, prompt for name.
+ 	window.onLoad = addUser();
 
-  }
+
+	function addUser(){
+
+		handle = prompt("Please enter your name");
+
+		if(handle && handle !== ""){
+			newNameDiv = document.createElement('div');
+			newNameDiv.id = handle;
+			newNameDiv.innerHTML = handle;
+			document.getElementById('users').appendChild(newNameDiv);
+		}
+		else
+			return addUser();
+	}
+
+	function sendMessage(k){
+
+		//Update the message area with typed text
+		document.getElementById('txt').value = 	k.value;
+
+		//Log the entry
+		console.log(k.value);
+
+		//Send the entry
+		socket.send(k.value);
+	}
+
+	function sendMarkup(m){
+		//Update the message area with typed text
+		//document.getElementById('txt').value = 	m.value;
+		var addDiv = document.createElement('div');
+		//document.getElementById('container').innerHTML = 	m.value;
+		addDiv.id = "addDiv";
+		addDiv.innerHTML = 	m.value;
+		if(document.getElementById('addDiv'))
+			document.getElementById('container').replaceChild(addDiv, document.getElementById('addDiv'));
+		else
+			document.getElementById('container').appendChild(addDiv);
+
+		//Log the entry
+		console.log(m.value);
+
+		//Send the entry
+		socket.send(m.value);
+	}
 </script>
