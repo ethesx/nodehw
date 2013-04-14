@@ -1,0 +1,25 @@
+<body>
+<textarea id="txt"  rows="100" cols="100" onKeyUp="sendMe(this)" ></textarea>
+<!-- <button onclick="socket.emit('event', document.getElementById('txt').value)"  >Send</button> -->
+
+</body>
+
+</html>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect('http://invengion.org');
+  socket.on('message', function (data) {
+    console.log(data);
+    document.getElementById('txt').value = data;
+
+  });
+
+  function sendMe(k){
+
+  	document.getElementById('txt').value = 	k.value;
+  	console.log(k.value);
+    socket.send(k.value);
+
+  }
+</script>
