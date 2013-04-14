@@ -37,6 +37,12 @@
 		    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.23);
 		    padding:31px;
  		}
+		
+		#container {
+			position:relative;
+			/*border:1px solid red;*/
+			margin-top:30px;
+		}
 
 	</style>
 </head>
@@ -52,15 +58,10 @@
 		<textarea id="markup"  rows="10" cols="100" onKeyUp="sendMarkup(this)" ></textarea>
 		<h6></h6>
 
-		<div  style="position:absolute;top:31px;right:31px;width:70px;/*border:1px solid black;*/" >
+		<div id="users" style="position:absolute;top:31px;right:31px;width:70px;/*border:1px solid black;*/" >
 			<h6>Users:</h6>
-			<div id="users" style="font-size:50%;word-wrap: break-word;word-break: break-all;">
-				User1
-				User2 User3 asdf asdf
-				asd
-				adf
-				adf
-				asdfasdfasdfasdf
+			<div id="userNames" style="font-size:50%;word-wrap: break-word;word-break: break-all;">
+				
 			</div>
 		</div>
 
@@ -68,7 +69,7 @@
 	</div>
 
 
-	<div id="container" style="position:relative;/*border:1px solid red;*/margin-top:30px;" ></div>
+	<div id="markContainer" style="" ></div>
 </div>
 
 
@@ -79,21 +80,31 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-  var socket = io.connect('http://localhost');
-  socket.on('message', function (data) {
-    console.log('Returned data = ' + data);
-    document.getElementById('txt').value = data;
-	//document.getElementById('container').innerHTML = 	data;
-  });
+  //When user reaches page, prompt for name.
+	window.onLoad = addUser();
+	
+	var divIds = {
+		userNames : "userNames",
+		markContainer : "markContainer",
+		textarea : "txt",
+		addDiv : "addDiv",
+		
+		};
 
-  socket.on('markup', function(markup){
-  	console.log('Markup returned = ' + markup);
-    document.getElementById('markup').value = markup;
-  });
+	var socket = io.connect('http://localhost');
+	
+	socket.on('message', function (data) {
+	  console.log('Returned data = ' + data);
+	  document.getElementById('txt').value = data;
+	      //document.getElementById('container').innerHTML = 	data;
+	});
+	
+	socket.on('markup', function(markup){
+	      console.log('Markup returned = ' + markup);
+	  document.getElementById('markup').value = markup;
+	});
 
-  	//When user reaches page, prompt for name.
- 	window.onLoad = addUser();
-
+  	
 
 	function addUser(){
 
@@ -103,7 +114,7 @@
 			newNameDiv = document.createElement('div');
 			newNameDiv.id = handle;
 			newNameDiv.innerHTML = handle;
-			document.getElementById('users').appendChild(newNameDiv);
+			document.getElementById(divIds.userNames).appendChild(newNameDiv);
 		}
 		else
 			return addUser();
@@ -112,7 +123,7 @@
 	function sendMessage(k){
 
 		//Update the message area with typed text
-		document.getElementById('txt').value = 	k.value;
+		document.getElementById(divIds.textarea).value = k.value;
 
 		//Log the entry
 		console.log(k.value);
@@ -126,12 +137,12 @@
 		//document.getElementById('txt').value = 	m.value;
 		var addDiv = document.createElement('div');
 		//document.getElementById('container').innerHTML = 	m.value;
-		addDiv.id = "addDiv";
+		addDiv.id = divIds.addDiv;
 		addDiv.innerHTML = 	m.value;
-		if(document.getElementById('addDiv'))
-			document.getElementById('container').replaceChild(addDiv, document.getElementById('addDiv'));
+		if(document.getElementById(divIds.addDiv))
+			document.getElementById(divIds.markContainer).replaceChild(addDiv, document.getElementById(ivIds.addDiv));
 		else
-			document.getElementById('container').appendChild(addDiv);
+			document.getElementById(divIds.markContainer).appendChild(addDiv);
 
 		//Log the entry
 		console.log(m.value);
