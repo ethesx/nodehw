@@ -85,6 +85,7 @@
 	var divIds = {
 		userNames : "userNames",
 		markContainer : "markContainer",
+		markTextArea : "markup",
 		textarea : "txt",
 		addDiv : "addDiv",
 		
@@ -100,6 +101,7 @@
 	socket.on('markup', function(markup){
 		console.log('Markup returned = ' + markup);
 		document.getElementById(divIds.markContainer).innerHTML = markup;
+		document.getElementById(divIds.markTextArea).value = markup;
 	});
 
   	
@@ -134,6 +136,7 @@
 	function sendMarkup(m){
 		//Update the message area with typed text
 
+		var output;
 		var addDiv = document.createElement('div');
 		addDiv.id = divIds.addDiv;
 		addDiv.innerHTML = m.value;
@@ -142,12 +145,12 @@
 		else
 			document.getElementById(divIds.markContainer).appendChild(addDiv);
 
-		var output = document.getElementById(divIds.markContainer).innerHTML;
+		
 		//Log the entry
-		console.log(output);
+		console.log(m.value);
 
 		//Send the entry
-		socket.emit('markup', output);
+		socket.emit('markup', m.value);
 	}
 	
 	//When user reaches page, prompt for name.
