@@ -20,12 +20,17 @@ function handler (req, res) {
 io.sockets.on('connection', function (socket) {
   socket.on('message', function (msg) {
     console.log("I Received= " + msg);
+    messagesLog = msg;
     socket.broadcast.send(msg);
+    socket.send(msg);
   });
 
   socket.on('markup', function(markup){
 	console.log("Markup Received= " + markup);
+	
+	markupLog = markup;
 	socket.broadcast.emit('markup', markup);
+	socket.emit('markup', markup);
   });
   socket.on('users', function(user){
 	//console.log("New user " + user);
@@ -50,8 +55,12 @@ io.sockets.on('connection', function (socket) {
 	//Send the users object
 	socket.broadcast.emit('users', users);
 	
+	socket.send(messagesLog);
+	socket.emit('markup', markupLog);
 	socket.emit('users', users);
   });
 });
 
 var users = new Array();
+var messagesLog = "";
+var markupLog = "";
