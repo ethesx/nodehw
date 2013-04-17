@@ -26,5 +26,32 @@ io.sockets.on('connection', function (socket) {
   socket.on('markup', function(markup){
 	console.log("Markup Received= " + markup);
 	socket.broadcast.emit('markup', markup);
-	  });
+  });
+  socket.on('users', function(user){
+	//console.log("New user " + user);
+	console.log("user= " + JSON.stringify(user));
+	console.log("user.push = " + user.push);
+	console.log("user.name = " + user.name);
+	
+	
+	if(user.push){
+	  users.push(user.name);
+	  console.log("Added user: " + user.name);
+	}
+	else{
+	  for (var i = 0; i < users.length; i++){
+	    
+	    if(users[i] === user.name){
+	      users.pop(i);
+	      console.log("Removed user: " + users[i]);
+	    }
+	  }
+	}
+	//Send the users object
+	socket.broadcast.emit('users', users);
+	
+	socket.emit('users', users);
+  });
 });
+
+var users = new Array();

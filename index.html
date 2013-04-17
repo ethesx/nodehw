@@ -51,21 +51,21 @@
 
 	<div id="inputDiv">
 
-		<h6>Communal text area</h6>
+		<h6>express yourself...</h6>
 		<textarea id="txt"  rows="10" cols="100" onKeyUp="sendMessage(this)" ></textarea>
 
-		<h6 style="display:block;">Enter code here</h6>
+		<h6 style="display:block;padding-left:60px;">or your imagination...  <span style="font-size:50%;">(markup)</span></h6>
 		<textarea id="markup"  rows="10" cols="100" onKeyUp="sendMarkup(this)" ></textarea>
-		<h6></h6>
+		
 
 		<div id="users" style="position:absolute;top:31px;right:31px;width:70px;/*border:1px solid black;*/" >
-			<h6>Users:</h6>
+			<span style="font-size:75%;">other dreamers:</span>
 			<div id="userNames" style="font-size:50%;word-wrap: break-word;word-break: break-all;">
-				
+				<div id="nameObjContainer"></div>
 			</div>
 		</div>
 
-		<span style="display:block;">Markup results:</span>
+		<h6 style="display:block;padding:0 0 20px 120px;">the product:</h6>
 	</div>
 
 
@@ -88,10 +88,12 @@
 		markTextArea : "markup",
 		textarea : "txt",
 		addDiv : "addDiv",
-		
+		nameObjContainer : "nameObjContainer",
 		};
 
-	var socket = io.connect('http://localhost');
+	///var socket = io.connect('http://localhost');
+	//Use current url
+	var socket = io.connect(window.location.href);
 	
 	socket.on('message', function (data) {
 		console.log('Returned data = ' + data);
@@ -104,20 +106,55 @@
 		document.getElementById(divIds.markTextArea).value = markup;
 	});
 
+	socket.on('users', function(users){
+		console.log('Users returned = ' + users);
+		
+		updateUsers(users);
+		
+	});
   	
+	function updateUsers(users){
+		
+		var nameObjContainer = document.createElement('div');
+		nameObjContainer.id = divIds.nameObjContainer;
+		
+		//Define the type of object we'll place users in
+		var nameObjType = "div";
 
-	function addUser(){
+		//iterate over all users returned to create object to add
+		for (var i = 0; i < users.length; i++){
+			var nameObj = document.createElement(nameObjType);
+			nameObj.innerHTML = users[i];
+			nameObj.id = users[i];
+			nameObjContainer.appendChild(nameObj);
+			
+		}
+		
+		//Replace the users list
+		document.getElementById(divIds.userNames).removeChild(document.getElementById(divIds.nameObjContainer));
+		document.getElementById(divIds.userNames).appendChild(nameObjContainer);
+				
+	}
+
+	function enterUser(){
 
 		handle = prompt("Please enter your name");
 
 		if(handle && handle !== ""){
-			newNameDiv = document.createElement('div');
-			newNameDiv.id = handle;
-			newNameDiv.innerHTML = handle;
-			document.getElementById(divIds.userNames).appendChild(newNameDiv);
+			socket.emit('users', {push : true, name : handle});
 		}
 		else
-			return addUser();
+			return enterUser();
+	}
+	
+	function addMe(){
+		
+		
+	}
+	
+	function leaveUser(){
+		socket.emit('users', {name : handle});
+		
 	}
 
 	function sendMessage(k){
@@ -154,5 +191,6 @@
 	}
 	
 	//When user reaches page, prompt for name.
-	window.onLoad = addUser();
+	window.onLoad = enterUser();
+	//window.onunload = leaveUser;
 </script>
