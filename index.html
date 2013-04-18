@@ -97,7 +97,7 @@
 	
 	socket.on('message', function (data) {
 		console.log('Returned data = ' + data);
-		document.getElementById('txt').value = data;
+		document.getElementById(divIds.textarea).value = data;
 	});
 	
 	socket.on('markup', function(markup){
@@ -108,9 +108,7 @@
 
 	socket.on('users', function(users){
 		console.log('Users returned = ' + users);
-		
-		updateUsers(users);
-		
+		updateUsers(users);	
 	});
   	
 	function updateUsers(users){
@@ -146,12 +144,7 @@
 		else
 			return enterUser();
 	}
-	
-	function addMe(){
 		
-		
-	}
-	
 	function leaveUser(){
 		socket.emit('users', {name : handle});
 		
@@ -160,8 +153,6 @@
 	function sendMessage(k){
 
 		var value = k.value;
-		//Update the message area with typed text
-		document.getElementById(divIds.textarea).value = value;
 
 		//Log the entry
 		console.log(value);
@@ -171,18 +162,9 @@
 	}
 
 	function sendMarkup(m){
-		//Update the message area with typed text
-
-		var output;
-		var addDiv = document.createElement('div');
-		addDiv.id = divIds.addDiv;
-		addDiv.innerHTML = m.value;
-		if(document.getElementById(divIds.addDiv))
-			document.getElementById(divIds.markContainer).replaceChild(addDiv, document.getElementById(divIds.addDiv));
-		else
-			document.getElementById(divIds.markContainer).appendChild(addDiv);
-
 		
+		var value = m.value;
+
 		//Log the entry
 		console.log(m.value);
 
@@ -192,5 +174,7 @@
 	
 	//When user reaches page, prompt for name.
 	window.onLoad = enterUser();
+	
+	//We'll come back to this.  onunload issues with some browsers
 	//window.onunload = leaveUser;
 </script>
